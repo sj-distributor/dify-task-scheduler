@@ -1,8 +1,8 @@
 # dify-task-scheduler
 
-<img src="https://img.shields.io/badge/Language-JavaScript-blue.svg" alt="Language">
-<img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License">
-<img src="https://img.shields.io/badge/Author-Simoon%20Feng-blue.svg" alt="Author">
+[![Language JavaScript](https://img.shields.io/badge/Language-JavaScript-blue.svg)](https://github.com/sj-distributor/create-react-boilerplates)
+[![License MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/Simoon-F/dify-task-scheduler/blob/master/LICENSE)
+[![Author Simoon Feng](https://img.shields.io/badge/Author-Simoon%20Feng-blue.svg)](https://github.com/Simoon-F)
 
 ---
 
