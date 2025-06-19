@@ -18,16 +18,15 @@ jobs:
       uses: actions/setup-node@v4
       with:
         node-version: '18'
-        cache: 'npm'
         
     - name: Install dependencies
-      run: npm install
+      run: yarn install
       
     - name: Run scheduler
-      run: npm run dev
+      run: yarn dev
       env:
         DIFY_BASE_URL: ${{ secrets.DIFY_BASE_URL }}
-        DIFY_TOKENS: ${{ secrets.DIFY_TOKENS }}
+        DIFY_TOKEN: ${{ secrets.DIFY_TOKEN }}
         DIFY_INPUTS: ${{ secrets.DIFY_INPUTS }}
         DIFY_RESPONSE_MODE: ${{ secrets.DIFY_RESPONSE_MODE }}
         DIFY_USER: ${{ secrets.DIFY_USER }}
