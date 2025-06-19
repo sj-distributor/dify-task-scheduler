@@ -1,0 +1,33 @@
+name: Dify Task Scheduler
+
+on:
+  schedule:
+    # 每小时运行一次，您可以根据需要调整
+    - cron: '0 * * * *'
+  workflow_dispatch: # 允许手动触发
+
+jobs:
+  run-scheduler:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm install
+      
+    - name: Run scheduler
+      run: npm run dev
+      env:
+        DIFY_BASE_URL: ${{ secrets.DIFY_BASE_URL }}
+        DIFY_TOKENS: ${{ secrets.DIFY_TOKENS }}
+        DIFY_INPUTS: ${{ secrets.DIFY_INPUTS }}
+        DIFY_RESPONSE_MODE: ${{ secrets.DIFY_RESPONSE_MODE }}
+        DIFY_USER: ${{ secrets.DIFY_USER }}
