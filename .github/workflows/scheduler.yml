@@ -2,9 +2,11 @@ name: Dify Task Scheduler
 
 on:
   schedule:
-    # 每小时运行一次，您可以根据需要调整
-    - cron: '0 * * * *'
-  workflow_dispatch: # 允许手动触发
+    # This cron expression runs the workflow every day at 9 AM UTC
+    # Adjust the time as needed for your timezone
+    # For example, to run at 9 AM UTC, use '0 9 * * *'
+    - cron: '0 1 * * *'
+  workflow_dispatch:
 
 env:
   DIFY_BASE_URL: ${{ secrets.DIFY_BASE_URL }}
