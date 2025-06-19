@@ -6,6 +6,13 @@ on:
     - cron: '0 * * * *'
   workflow_dispatch: # 允许手动触发
 
+env:
+  DIFY_BASE_URL: ${{ secrets.DIFY_BASE_URL }}
+  DIFY_TOKEN: ${{ secrets.DIFY_TOKEN }}
+  DIFY_INPUTS: ${{ secrets.DIFY_INPUTS }}
+  DIFY_RESPONSE_MODE: ${{ secrets.DIFY_RESPONSE_MODE }}
+  DIFY_USER: ${{ secrets.DIFY_USER }}
+
 jobs:
   run-scheduler:
     runs-on: ubuntu-latest
@@ -24,9 +31,3 @@ jobs:
       
     - name: Run scheduler
       run: yarn dev
-      env:
-        DIFY_BASE_URL: ${{ secrets.DIFY_BASE_URL }}
-        DIFY_TOKEN: ${{ secrets.DIFY_TOKEN }}
-        DIFY_INPUTS: ${{ secrets.DIFY_INPUTS }}
-        DIFY_RESPONSE_MODE: ${{ secrets.DIFY_RESPONSE_MODE }}
-        DIFY_USER: ${{ secrets.DIFY_USER }}
