@@ -27,3 +27,4 @@ dist-ssr
 .history/*
 pnpm-lock.yaml
 yarn.lock
+.env
