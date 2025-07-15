@@ -12,7 +12,8 @@
 
 🚀 特性
 - **基于 cron 的定时调度**，使用 GitHub Actions（或自托管 Node 运行时）
-- **单一工作流支持**，简化的 token 管理
+- **多 API 密钥支持**，自动循环执行
+- **灵活的密钥配置**，支持分号分隔格式
 - **环境变量配置**，安全的 API 凭证管理
 - **清晰的代码结构**，便于后续扩展与维护
 - **错误处理和日志记录**，确保可靠执行
@@ -51,7 +52,10 @@ yarn install
 
 ```env
 DIFY_BASE_URL=https://api.dify.ai/v1
+# 单个密钥
 DIFY_TOKEN=your-dify-workflow-token
+# 多个密钥用分号分隔
+# DIFY_TOKEN=token1;token2;token3
 DIFY_INPUTS={"key":"value"}
 DIFY_RESPONSE_MODE=blocking
 DIFY_USER=scheduler-user
@@ -70,7 +74,7 @@ yarn dev
 | 变量名 | 描述 | 默认值 | 是否必需 |
 |--------|------|--------|----------|
 | `DIFY_BASE_URL` | Dify API 基础 URL | `https://api.dify.ai/v1` | 否 |
-| `DIFY_TOKEN` | 你的 Dify 工作流 token | - | **是** |
+| `DIFY_TOKEN` | 你的 Dify 工作流 token，支持单个密钥或用分号分隔的多个密钥 | - | **是** |
 | `DIFY_INPUTS` | 工作流输入参数的 JSON 字符串 | `{}` | 否 |
 | `DIFY_RESPONSE_MODE` | 响应模式（`blocking` 或 `streaming`） | `blocking` | 否 |
 | `DIFY_USER` | 工作流的用户标识符 | `scheduler-user` | 否 |
@@ -114,7 +118,8 @@ dify-task-scheduler/
 │   ├── dify-api.js         # Dify API 客户端
 │   ├── dify-workflow.js    # 工作流任务类
 │   ├── index.js            # 主入口点
-│   └── scheduler.js        # 调度器逻辑
+│   ├── scheduler.js        # 调度器逻辑
+│   └── utils.js            # 工具函数
 ├── package.json
 ├── README.md
 └── .env.example            # 环境变量模板
@@ -163,6 +168,39 @@ async function runWorkflow() {
 runWorkflow();
 ```
 
+### 多密钥配置
+
+在你的 `.env` 文件中配置多个 API 密钥：
+
+```env
+# 多个密钥用分号分隔
+DIFY_TOKEN=app-token1;app-token2;app-token3
+```
+
+调度器会自动循环遍历所有密钥并为每个密钥执行工作流：
+
+```bash
+$ yarn dev
+发现 3 个API密钥，开始循环调用...
+正在使用第 1/3 个API密钥: app-token1...
+✅ 第 1 个API密钥调用成功
+正在使用第 2/3 个API密钥: app-token2...
+✅ 第 2 个API密钥调用成功
+正在使用第 3/3 个API密钥: app-token3...
+✅ 第 3 个API密钥调用成功
+
+=== 循环调用结果汇总 ===
+
+API密钥 1 (app-token1...):
+✅ 成功: {"result": "workflow output"}
+
+API密钥 2 (app-token2...):
+✅ 成功: {"result": "workflow output"}
+
+API密钥 3 (app-token3...):
+✅ 成功: {"result": "workflow output"}
+```
+
 ### 自定义配置
 
 ```javascript
@@ -170,8 +208,8 @@ const { DifyWorkflowTask } = require('./src/dify-workflow');
 
 async function customWorkflow() {
   const task = new DifyWorkflowTask('your-token');
-  await task.run();
-  console.log('结果:', task.toString());
+  const result = await task.run();
+  console.log('结果:', result);
 }
 ```
 

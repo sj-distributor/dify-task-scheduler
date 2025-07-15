@@ -16,7 +16,8 @@ It simplifies integration with Dify by enabling scheduled execution of agents or
 
 🚀 Features
 - **Cron-based scheduling** using GitHub Actions (or self-hosted Node runtime)
-- **Single workflow support** with simplified token management
+- **Multiple API tokens support** with automatic loop execution
+- **Flexible token configuration** using semicolon-separated format
 - **Environment variable configuration** for secure API credentials
 - **Clean code structure** with future extensibility in mind
 - **Error handling and logging** for reliable execution
@@ -55,7 +56,10 @@ Create a `.env` file in the root directory:
 
 ```env
 DIFY_BASE_URL=https://api.dify.ai/v1
+# Single token
 DIFY_TOKEN=your-dify-workflow-token
+# Multiple tokens separated by semicolons
+# DIFY_TOKEN=token1;token2;token3
 DIFY_INPUTS={"key":"value"}
 DIFY_RESPONSE_MODE=blocking
 DIFY_USER=scheduler-user
@@ -74,7 +78,7 @@ yarn dev
 | Variable | Description | Default | Required |
 |----------|-------------|---------|----------|
 | `DIFY_BASE_URL` | Dify API base URL | `https://api.dify.ai/v1` | No |
-| `DIFY_TOKEN` | Your Dify workflow token | - | **Yes** |
+| `DIFY_TOKEN` | Your Dify workflow token(s). Support single token or multiple tokens separated by semicolons | - | **Yes** |
 | `DIFY_INPUTS` | JSON string of workflow inputs | `{}` | No |
 | `DIFY_RESPONSE_MODE` | Response mode (`blocking` or `streaming`) | `blocking` | No |
 | `DIFY_USER` | User identifier for the workflow | `scheduler-user` | No |
@@ -118,7 +122,8 @@ dify-task-scheduler/
 │   ├── dify-api.js         # Dify API client
 │   ├── dify-workflow.js    # Workflow task class
 │   ├── index.js            # Main entry point
-│   └── scheduler.js        # Scheduler logic
+│   ├── scheduler.js        # Scheduler logic
+│   └── utils.js            # Utility functions
 ├── package.json
 ├── README.md
 └── .env.example            # Environment variables template
@@ -167,6 +172,39 @@ async function runWorkflow() {
 runWorkflow();
 ```
 
+### Multiple Tokens Configuration
+
+Configure multiple API tokens in your `.env` file:
+
+```env
+# Multiple tokens separated by semicolons
+DIFY_TOKEN=app-token1;app-token2;app-token3
+```
+
+The scheduler will automatically loop through all tokens and execute the workflow for each one:
+
+```bash
+$ yarn dev
+Found 3 API tokens, starting loop execution...
+Using token 1/3: app-token1...
+✅ Token 1 execution successful
+Using token 2/3: app-token2...
+✅ Token 2 execution successful
+Using token 3/3: app-token3...
+✅ Token 3 execution successful
+
+=== Loop Execution Results Summary ===
+
+API Token 1 (app-token1...):
+✅ Success: {"result": "workflow output"}
+
+API Token 2 (app-token2...):
+✅ Success: {"result": "workflow output"}
+
+API Token 3 (app-token3...):
+✅ Success: {"result": "workflow output"}
+```
+
 ### Custom Configuration
 
 ```javascript
@@ -174,8 +212,8 @@ const { DifyWorkflowTask } = require('./src/dify-workflow');
 
 async function customWorkflow() {
   const task = new DifyWorkflowTask('your-token');
-  await task.run();
-  console.log('Result:', task.toString());
+  const result = await task.run();
+  console.log('Result:', result);
 }
 ```
 
