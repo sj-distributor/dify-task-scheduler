@@ -29,20 +29,62 @@ It simplifies integration with Dify by enabling scheduled execution of agents or
 
 ## 📋 Prerequisites
 
-- Node.js 18+ (for local development)
 - A Dify account with API access
 - GitHub repository (for GitHub Actions scheduling)
+- Node.js 18+ (only for local development)
 
 ## 🚀 Quick Start
 
-### 1. Clone the Repository
+### Method 1: GitHub Actions (Recommended)
+
+This is the easiest way to get started - no local setup required!
+
+#### 1. Fork the Repository
+
+1. Go to [https://github.com/Simoon-F/dify-task-scheduler](https://github.com/Simoon-F/dify-task-scheduler)
+2. Click the **Fork** button in the top right corner
+3. This creates a copy of the repository in your GitHub account
+
+Alternatively, you can clone the repository directly:
 
 ```bash
 git clone https://github.com/Simoon-F/dify-task-scheduler.git
 cd dify-task-scheduler
 ```
 
-### 2. Install Dependencies
+#### 2. Configure GitHub Secrets
+
+1. Go to your repository's **Settings** → **Secrets and variables** → **Actions**
+2. Add the following secrets:
+   - `DIFY_BASE_URL` (optional, defaults to `https://api.dify.ai/v1`)
+   - `DIFY_TOKEN` (required - your Dify workflow token)
+   - `DIFY_INPUTS` (optional, JSON string like `{"key":"value"}`)
+   - `DIFY_RESPONSE_MODE` (optional, defaults to `blocking`)
+   - `DIFY_USER` (optional, defaults to `scheduler-user`)
+
+#### 3. Enable GitHub Actions
+
+The workflow will automatically run daily at 9:00 AM Beijing Time (1:00 AM UTC). You can also trigger it manually:
+
+1. Go to **Actions** tab in your repository
+2. Select "Dify Task Scheduler"
+3. Click "Run workflow"
+
+#### 4. Customize Schedule (Optional)
+
+Edit `.github/workflows/scheduler.yml` to change the schedule:
+
+```yaml
+schedule:
+  # Run at 1:00 AM UTC (9:00 AM Beijing Time)
+  - cron: '0 1 * * *'
+```
+
+### Method 2: Local Development
+
+For testing and development purposes:
+
+#### 1. Install Dependencies
 
 ```bash
 npm install
@@ -50,7 +92,7 @@ npm install
 yarn install
 ```
 
-### 3. Configure Environment Variables
+#### 2. Configure Environment Variables
 
 Create a `.env` file in the root directory:
 
@@ -65,7 +107,7 @@ DIFY_RESPONSE_MODE=blocking
 DIFY_USER=scheduler-user
 ```
 
-### 4. Run Locally
+#### 3. Run Locally
 
 ```bash
 yarn dev
@@ -83,31 +125,26 @@ yarn dev
 | `DIFY_RESPONSE_MODE` | Response mode (`blocking` or `streaming`) | `blocking` | No |
 | `DIFY_USER` | User identifier for the workflow | `scheduler-user` | No |
 
-### GitHub Actions Scheduling
+### Multiple Tokens Support
 
-The project includes a GitHub Actions workflow (`.github/workflows/scheduler.yml`) that runs automatically:
+You can configure multiple API tokens for batch execution:
 
-- **Schedule**: Daily at 9:00 AM Beijing Time (1:00 AM UTC)
-- **Manual trigger**: Available via GitHub Actions UI
+```env
+# Multiple tokens separated by semicolons
+DIFY_TOKEN=app-token1;app-token2;app-token3
+```
 
-#### Setting up GitHub Secrets
+The scheduler will automatically loop through all tokens:
 
-1. Go to your repository's **Settings** → **Secrets and variables** → **Actions**
-2. Add the following secrets:
-   - `DIFY_BASE_URL`
-   - `DIFY_TOKEN`
-   - `DIFY_INPUTS`
-   - `DIFY_RESPONSE_MODE`
-   - `DIFY_USER`
-
-#### Customizing the Schedule
-
-Edit `.github/workflows/scheduler.yml` to change the cron schedule:
-
-```yaml
-schedule:
-  # Run at 1:00 AM UTC (9:00 AM Beijing Time)
-  - cron: '0 1 * * *'
+```bash
+$ yarn dev
+Found 3 API tokens, starting loop execution...
+Using token 1/3: app-token1...
+✅ Token 1 execution successful
+Using token 2/3: app-token2...
+✅ Token 2 execution successful
+Using token 3/3: app-token3...
+✅ Token 3 execution successful
 ```
 
 ## 📁 Project Structure
@@ -129,33 +166,37 @@ dify-task-scheduler/
 └── .env.example            # Environment variables template
 ```
 
-## 🔧 Development
-
-### Local Development
-
-1. Copy environment variables:
-   ```bash
-   cp .env.example .env
-   ```
-
-2. Edit `.env` with your Dify credentials
-
-3. Run the scheduler:
-   ```bash
-   yarn dev
-   ```
-
-### Testing
-
-You can test the workflow execution manually:
-
-```bash
-node src/index.js
-```
-
 ## 📝 Usage Examples
 
-### Basic Workflow Execution
+### GitHub Actions Usage
+
+Once configured, your workflows will run automatically according to the schedule. You can monitor execution:
+
+1. Go to **Actions** tab in your repository
+2. View workflow runs and logs
+3. Check execution results and any errors
+
+### Manual Trigger
+
+You can manually trigger the workflow anytime:
+
+1. Go to **Actions** → **Dify Task Scheduler**
+2. Click **Run workflow**
+3. Select branch and click **Run workflow**
+
+### Local Testing
+
+For development and testing:
+
+```bash
+# Test single execution
+node src/index.js
+
+# Run with development mode
+yarn dev
+```
+
+### Custom Configuration Example
 
 ```javascript
 const { startScheduler } = require('./src/scheduler');
@@ -172,67 +213,66 @@ async function runWorkflow() {
 runWorkflow();
 ```
 
-### Multiple Tokens Configuration
+## 🔧 Local Development
 
-Configure multiple API tokens in your `.env` file:
+For contributors and advanced users:
 
-```env
-# Multiple tokens separated by semicolons
-DIFY_TOKEN=app-token1;app-token2;app-token3
-```
+### Setup
 
-The scheduler will automatically loop through all tokens and execute the workflow for each one:
+1. Copy environment variables:
+   ```bash
+   cp .env.example .env
+   ```
+
+2. Edit `.env` with your Dify credentials
+
+3. Run the scheduler:
+   ```bash
+   yarn dev
+   ```
+
+### Testing
 
 ```bash
-$ yarn dev
-Found 3 API tokens, starting loop execution...
-Using token 1/3: app-token1...
-✅ Token 1 execution successful
-Using token 2/3: app-token2...
-✅ Token 2 execution successful
-Using token 3/3: app-token3...
-✅ Token 3 execution successful
+# Test workflow execution
+node src/index.js
 
-=== Loop Execution Results Summary ===
-
-API Token 1 (app-token1...):
-✅ Success: {"result": "workflow output"}
-
-API Token 2 (app-token2...):
-✅ Success: {"result": "workflow output"}
-
-API Token 3 (app-token3...):
-✅ Success: {"result": "workflow output"}
-```
-
-### Custom Configuration
-
-```javascript
-const { DifyWorkflowTask } = require('./src/dify-workflow');
-
-async function customWorkflow() {
-  const task = new DifyWorkflowTask('your-token');
-  const result = await task.run();
-  console.log('Result:', result);
-}
+# Run with development logging
+DEBUG=* yarn dev
 ```
 
 ## 🛠️ Troubleshooting
 
-### Common Issues
+### GitHub Actions Issues
 
-1. **"DIFY_TOKEN environment variable is required"**
-   - Ensure you've set the `DIFY_TOKEN` in your `.env` file or GitHub Secrets
+1. **GitHub Actions not running**
+   - Check that your repository has Actions enabled in Settings
+   - Verify the cron schedule syntax in `.github/workflows/scheduler.yml`
+   - Ensure you have the necessary permissions to run Actions
 
-2. **"Cannot find module" errors**
-   - Run `yarn install` to install dependencies
+2. **"DIFY_TOKEN environment variable is required"**
+   - Go to repository Settings → Secrets and variables → Actions
+   - Add `DIFY_TOKEN` secret with your Dify workflow token
+   - Make sure the secret name matches exactly
+
+3. **Workflow fails with API errors**
+   - Verify your Dify token is valid and has correct permissions
+   - Check if your Dify workflow/agent is active
+   - Review the Actions logs for detailed error messages
+
+### Local Development Issues
+
+1. **"Cannot find module" errors**
+   - Run `yarn install` or `npm install` to install dependencies
+   - Ensure you're in the correct project directory
+
+2. **Environment variable issues**
+   - Copy `.env.example` to `.env` and fill in your values
+   - Ensure `DIFY_TOKEN` is set correctly in your `.env` file
 
 3. **API authentication errors**
    - Verify your Dify token is valid and has the correct permissions
-
-4. **GitHub Actions not running**
-   - Check that your repository has Actions enabled
-   - Verify the cron schedule syntax
+   - Check if the `DIFY_BASE_URL` is correct for your Dify instance
 
 ## 🤝 Contributing
 
