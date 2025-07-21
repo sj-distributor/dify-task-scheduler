@@ -50,7 +50,7 @@ cd dify-task-scheduler
 
 #### 2. 配置 GitHub Secrets
 
-1. 进入你的仓库的 **Settings** → **Secrets and variables** → **Actions** -> **Environment secrets**
+1. 进入你的仓库的 **Settings** → **Secrets and variables** → **Actions** -> **Repository secrets**
 2. 添加以下 secrets：
    - `DIFY_BASE_URL`（可选，默认为 `https://api.dify.ai/v1`）
    - `DIFY_TOKEN`（必需 - 你的 Dify 工作流 token）

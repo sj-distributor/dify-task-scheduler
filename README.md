@@ -54,7 +54,7 @@ cd dify-task-scheduler
 
 #### 2. Configure GitHub Secrets
 
-1. Go to your repository's **Settings** → **Secrets and variables** → **Actions**
+1. Go to your repository's **Settings** → **Secrets and variables** → **Actions** -> **Repository secrets**
 2. Add the following secrets:
    - `DIFY_BASE_URL` (optional, defaults to `https://api.dify.ai/v1`)
    - `DIFY_TOKEN` (required - your Dify workflow token)
