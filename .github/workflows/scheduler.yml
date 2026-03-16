@@ -5,7 +5,7 @@ on:
     # This cron expression runs the workflow every day at 7 AM UTC (3 PM Beijing Time)
     # Adjust the time as needed for your timezone
     # For example, to run at 3 PM Beijing Time, use '0 7 * * *'
-    - cron: '30 6 * * *'
+    - cron: '0 6 * * *'
   workflow_dispatch:
 
 env:
